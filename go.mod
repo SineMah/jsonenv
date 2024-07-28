@@ -1,4 +1,4 @@
-module mincedmind.com/jsonenv
+module github.com/sinemah/jsonenv
 
 go 1.22.4
 
