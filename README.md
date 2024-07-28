@@ -4,7 +4,7 @@ Arrays will not be parsed and recognized. jsonenv sets environment variables bas
 
 ## Installation
 ```bash
-go get -u mincedmind.com/jsonenv
+go get -u github.com/sinemah/jsonenv
 ```
 ## Usage
 ### Config File
