@@ -1,4 +1,4 @@
-package aes_crypt
+package aescrypt
 
 import (
 	"encoding/base64"

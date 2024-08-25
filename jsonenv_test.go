@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sinemah/jsonenv/encrypt/aes_crypt"
+	"github.com/sinemah/jsonenv/encrypt/aescrypt"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -72,11 +72,11 @@ func TestEncryptedValues(t *testing.T) {
 
 		os.Setenv("JSONENV_AES_FILE", ".crypt")
 
-		e := aes_crypt.NewKey(".crypt")
+		e := aescrypt.NewKey(".crypt")
 
 		e.GenerateKey()
 
-		c, err := aes_crypt.NewCrypter(".crypt")
+		c, err := aescrypt.NewCrypter(".crypt")
 
 		assert.Nil(t, err)
 
@@ -99,7 +99,7 @@ func TestEncryptedValues(t *testing.T) {
 
 		os.Setenv("JSONENV_AES_FILE", ".crypt")
 
-		e := aes_crypt.NewKey(".crypt")
+		e := aescrypt.NewKey(".crypt")
 
 		e.GenerateKey()
 
@@ -118,7 +118,7 @@ func TestEncryptedValues(t *testing.T) {
 
 		os.Setenv("JSONENV_AES_FILE", ".crypt")
 
-		e := aes_crypt.NewKey(".crypt")
+		e := aescrypt.NewKey(".crypt")
 
 		e.GenerateKey()
 

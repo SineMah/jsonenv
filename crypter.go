@@ -4,11 +4,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sinemah/jsonenv/encrypt/aes_crypt"
+	"github.com/sinemah/jsonenv/encrypt/aescrypt"
 )
 
 type Crypter struct {
-	aesCrypter *aes_crypt.Crypter
+	aesCrypter *aescrypt.Crypter
 }
 
 func LoadCrypter() *Crypter {
@@ -45,8 +45,8 @@ func (c Crypter) Decrypt(value string) string {
 	return encryptedValue
 }
 
-func loadAesCrypter() *aes_crypt.Crypter {
-	c, err := aes_crypt.NewCrypter(os.Getenv("JSONENV_AES_FILE"))
+func loadAesCrypter() *aescrypt.Crypter {
+	c, err := aescrypt.NewCrypter(os.Getenv("JSONENV_AES_FILE"))
 
 	if err != nil {
 		return nil
