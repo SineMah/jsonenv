@@ -1,4 +1,4 @@
-package encrypt
+package aes_crypt
 
 import (
 	"os"

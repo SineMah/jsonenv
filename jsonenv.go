@@ -60,6 +60,7 @@ func loadFile(filename string) error {
 }
 
 func Unmarshal(bytes []byte) (map[string]string, error) {
+	c := LoadCrypter()
 	envRaw := make(map[string]any)
 
 	err := json.Unmarshal(bytes, &envRaw)
@@ -72,12 +73,12 @@ func Unmarshal(bytes []byte) (map[string]string, error) {
 		return nil, errors.New("empty env file loaded")
 	}
 
-	m := flattenMap(envRaw, "")
+	m := flattenMap(envRaw, "", c)
 
 	return m, nil
 }
 
-func flattenMap(input map[string]any, prefix string) map[string]string {
+func flattenMap(input map[string]any, prefix string, crypter *Crypter) map[string]string {
 	result := make(map[string]string)
 
 	for key, value := range input {
@@ -87,13 +88,13 @@ func flattenMap(input map[string]any, prefix string) map[string]string {
 		}
 
 		if reflect.ValueOf(value).Kind() == reflect.Map {
-			nested := flattenMap(value.(map[string]any), fullKey)
+			nested := flattenMap(value.(map[string]any), fullKey, crypter)
 
 			for k, v := range nested {
 				result[k] = v
 			}
 		} else {
-			result[fullKey] = ConvertAnyToString(value)
+			result[fullKey] = crypter.Decrypt(ConvertAnyToString(value))
 		}
 	}
 

@@ -1,8 +1,10 @@
 package jsonenv
 
 import (
+	"os"
 	"testing"
 
+	"github.com/sinemah/jsonenv/encrypt/aes_crypt"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,5 +63,88 @@ func TestConvertAnyToString(t *testing.T) {
 		m["e"] = 2.71828
 
 		assert.Equal(t, "", ConvertAnyToString(m))
+	})
+}
+
+func TestEncryptedValues(t *testing.T) {
+
+	t.Run("test aes decrypt json value", func(t *testing.T) {
+
+		os.Setenv("JSONENV_AES_FILE", ".crypt")
+
+		e := aes_crypt.NewKey(".crypt")
+
+		e.GenerateKey()
+
+		c, err := aes_crypt.NewCrypter(".crypt")
+
+		assert.Nil(t, err)
+
+		v, err := c.EncryptValue("baz_1110")
+
+		assert.Nil(t, err)
+
+		bytes := []byte(`{"port": 1111, "port_as_string":"1110", "foo": {"bar": "encrypted:aes:` + v + `"}, "is_true": true}`)
+
+		r, err := Unmarshal(bytes)
+
+		if err != nil {
+			t.Errorf("Error unmarshalling: %v", err)
+		}
+
+		assert.Equal(t, "baz_1110", r["foo.bar"])
+	})
+
+	t.Run("test invalid aes decrypt json value", func(t *testing.T) {
+
+		os.Setenv("JSONENV_AES_FILE", ".crypt")
+
+		e := aes_crypt.NewKey(".crypt")
+
+		e.GenerateKey()
+
+		bytes := []byte(`{"port": 1111, "port_as_string":"1110", "foo": {"bar": "encrypted:aes:abc"}, "is_true": true}`)
+
+		r, err := Unmarshal(bytes)
+
+		if err != nil {
+			t.Errorf("Error unmarshalling: %v", err)
+		}
+
+		assert.Equal(t, "", r["foo.bar"])
+	})
+
+	t.Run("test not supported encryption algorithm", func(t *testing.T) {
+
+		os.Setenv("JSONENV_AES_FILE", ".crypt")
+
+		e := aes_crypt.NewKey(".crypt")
+
+		e.GenerateKey()
+
+		bytes := []byte(`{"port": 1111, "port_as_string":"1110", "foo": {"bar": "encrypted:razupaltuff:abc"}, "is_true": true}`)
+
+		r, err := Unmarshal(bytes)
+
+		if err != nil {
+			t.Errorf("Error unmarshalling: %v", err)
+		}
+
+		assert.Equal(t, "", r["foo.bar"])
+	})
+
+	t.Run("test encryption can not be loaded", func(t *testing.T) {
+
+		os.Setenv("JSONENV_AES_FILE", "")
+
+		bytes := []byte(`{"port": 1111, "port_as_string":"1110", "foo": {"bar": "encrypted:aes:abc"}, "is_true": true}`)
+
+		r, err := Unmarshal(bytes)
+
+		if err != nil {
+			t.Errorf("Error unmarshalling: %v", err)
+		}
+
+		assert.Equal(t, "", r["foo.bar"])
 	})
 }
